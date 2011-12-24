@@ -1,0 +1,7 @@
+{
+ "shell-version": ["3.2.1", "3.2.2"], 
+ "uuid": "calc@patapon.info",
+ "name": "Calculator",
+ "description": "A simple calculator in the search overview",
+ "url": "https://github.com/eonpatapon/gnome-shell-extension-calc"
+}
