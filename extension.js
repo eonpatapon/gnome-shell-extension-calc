@@ -84,7 +84,7 @@ CalcProvider.prototype = {
             }
             catch(exp) {
                 return []
-            } 
+            }
         }
         else {
             return [];
@@ -95,16 +95,18 @@ CalcProvider.prototype = {
         return this.getInitialResultSet(terms);
     },
 
-    getResultMeta: function(result) {
-        return {
-            'id': 0,
-            'result': result.result,
-            'expr': result.expr
-        };
+    getResultMetas: function(ids) {
+        let metas = [];
+        for (let i = 0; i < ids.length; i++) {
+            metas.push({ 'id': ids[i],
+                         'name': '',
+                         'createIcon': '' });
+        }
+        return metas;
     },
 
     createResultActor: function(resultMeta, terms) {
-        let result = new CalcResult(resultMeta);
+        let result = new CalcResult(resultMeta.id);
         return result.actor;
     },
 
