@@ -77,7 +77,7 @@ CalcProvider.prototype = {
     },
 
     getInitialResultSet: function(terms) { 
-        let expr = terms.join('');
+        let expr = terms.join('').replace(/,/g, '.');
         if (/^[0-9.+*/()-]+$/.test(expr)) {
             try {
                 return [{'expr': expr, 'result': eval(expr).toString()}];
