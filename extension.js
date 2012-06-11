@@ -18,62 +18,58 @@ const Main = imports.ui.main;
 const Search = imports.ui.search;
 const SearchDisplay = imports.ui.searchDisplay;
 const IconGrid = imports.ui.iconGrid;
+const Lang = imports.lang;
 
-const MAX_SEARCH_RESULTS_ROWS = 1;
-const ICON_SIZE = 81;
+const ICON_SIZE = imports.ui.contactDisplay.ICON_SIZE;
+const MAX_SEARCH_RESULTS_ROWS = imports.ui.contactDisplay.MAX_SEARCH_RESULTS_ROWS;
 
 let calcProvider = "";
 
-function CalcResult(result) {
-    this._init(result);
-}
+const CalcResult = new Lang.Class({
+    Name: 'CalcResult',
 
-CalcResult.prototype = {
     _init: function(resultMeta) {
 
-        this.actor = new St.Bin({ style_class: 'contact',
-                                  reactive: true,
-                                  track_hover: true });
+        this.actor = new St.Bin({style_class: 'contact',
+                                 reactive: true,
+                                 track_hover: true});
 
-        let content = new St.BoxLayout( { style_class: 'contact-content',
-                                          vertical: false });
+        let content = new St.BoxLayout({style_class: 'contact-content',
+                                        vertical: false });
         this.actor.set_child(content);
 
-        let icon = new St.Icon({ icon_type: St.IconType.FULLCOLOR,
-                                 icon_size: ICON_SIZE,
-                                 icon_name: 'accessories-calculator',
-                                 style_class: 'contact-icon' });
+        let icon = new St.Icon({icon_type: St.IconType.FULLCOLOR,
+                                icon_size: ICON_SIZE,
+                                icon_name: 'accessories-calculator',
+                                style_class: 'contact-icon'});
 
-        content.add(icon, { x_fill: true,
-                            y_fill: false,
-                            x_align: St.Align.START,
-                            y_align: St.Align.MIDDLE });
+        content.add(icon, {x_fill: true,
+                           y_fill: false,
+                           x_align: St.Align.START,
+                           y_align: St.Align.MIDDLE});
 
-        let result = new St.BoxLayout({ style_class: 'contact-details',
-                                        vertical: true });
+        let result = new St.BoxLayout({style_class: 'contact-details',
+                                       vertical: true});
 
-        content.add(result, { x_fill: true, x_align: St.Align.START });
+        content.add(result, {x_fill: true, x_align: St.Align.START});
 
-        let exprLabel = new St.Label({ text: resultMeta.expr,
-                                         style_class: 'result-expr' });
-        let resultLabel = new St.Label({ text: resultMeta.result,
-                                         style_class: 'result-result' });
+        let exprLabel = new St.Label({text: resultMeta.expr,
+                                      style_class: 'result-expr'});
+        let resultLabel = new St.Label({text: resultMeta.result,
+                                        style_class: 'result-result'});
 
-        result.add(exprLabel, { x_fill: false, x_align: St.Align.START });
-        result.add(resultLabel, { x_fill: false, x_align: St.Align.START });
+        result.add(exprLabel, {x_fill: false, x_align: St.Align.START});
+        result.add(resultLabel, {x_fill: false, x_align: St.Align.START});
     }
 
-};
+});
 
-function CalcProvider() {
-    this._init.apply(this, arguments);
-}
-
-CalcProvider.prototype = {
-    __proto__: Search.SearchProvider.prototype,
+const CalcProvider = new Lang.Class({
+    Name: 'CalcProvider',
+    Extends: Search.SearchProvider,
 
     _init: function(title) {
-        Search.SearchProvider.prototype._init.call(this, title);
+        this.parent(title);
     },
 
     getInitialResultSet: function(terms) { 
@@ -98,9 +94,9 @@ CalcProvider.prototype = {
     getResultMetas: function(ids) {
         let metas = [];
         for (let i = 0; i < ids.length; i++) {
-            metas.push({ 'id': ids[i],
-                         'name': '',
-                         'createIcon': '' });
+            metas.push({'id': ids[i],
+                        'name': '',
+                        'createIcon': ''});
         }
         return metas;
     },
@@ -111,8 +107,8 @@ CalcProvider.prototype = {
     },
 
     createResultContainerActor: function() {
-        let grid = new IconGrid.IconGrid({ rowLimit: MAX_SEARCH_RESULTS_ROWS,
-                                           xAlign: St.Align.START });
+        let grid = new IconGrid.IconGrid({rowLimit: MAX_SEARCH_RESULTS_ROWS,
+                                          xAlign: St.Align.START });
         grid.actor.style_class = 'contact-grid';
 
         let actor = new SearchDisplay.GridSearchResults(this, grid);
@@ -122,7 +118,7 @@ CalcProvider.prototype = {
     activateResult: function(resultId) {
         return true;
     }
-}
+});
 
 function init() {
     calcProvider = new CalcProvider('CALCULATOR');
