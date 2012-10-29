@@ -20,8 +20,8 @@ const SearchDisplay = imports.ui.searchDisplay;
 const IconGrid = imports.ui.iconGrid;
 const Lang = imports.lang;
 
-const ICON_SIZE = imports.ui.contactDisplay.ICON_SIZE;
-const MAX_SEARCH_RESULTS_ROWS = imports.ui.contactDisplay.MAX_SEARCH_RESULTS_ROWS;
+const ICON_SIZE = 81;
+const MAX_SEARCH_RESULTS_ROWS = 1;
 
 let calcProvider = "";
 
@@ -38,8 +38,7 @@ const CalcResult = new Lang.Class({
                                         vertical: false });
         this.actor.set_child(content);
 
-        let icon = new St.Icon({icon_type: St.IconType.FULLCOLOR,
-                                icon_size: ICON_SIZE,
+        let icon = new St.Icon({icon_size: ICON_SIZE,
                                 icon_name: 'accessories-calculator',
                                 style_class: 'contact-icon'});
 
@@ -60,6 +59,7 @@ const CalcResult = new Lang.Class({
 
         result.add(exprLabel, {x_fill: false, x_align: St.Align.START});
         result.add(resultLabel, {x_fill: false, x_align: St.Align.START});
+        result.set_width(400);
     }
 
 });
@@ -76,14 +76,14 @@ const CalcProvider = new Lang.Class({
         let expr = terms.join('').replace(/,/g, '.');
         if (/^[0-9.+*/()-]+$/.test(expr)) {
             try {
-                return [{'expr': expr, 'result': eval(expr).toString()}];
+                this.searchSystem.pushResults(this, [{'expr': expr, 'result': eval(expr).toString()}]);
             }
             catch(exp) {
-                return []
+                this.searchSystem.pushResults(this, []);
             }
         }
         else {
-            return [];
+            this.searchSystem.pushResults(this, []);
         }
     },
 
@@ -91,14 +91,14 @@ const CalcProvider = new Lang.Class({
         return this.getInitialResultSet(terms);
     },
 
-    getResultMetas: function(ids) {
+    getResultMetas: function(ids, callback) {
         let metas = [];
         for (let i = 0; i < ids.length; i++) {
             metas.push({'id': ids[i],
                         'name': '',
                         'createIcon': ''});
         }
-        return metas;
+        callback(metas);
     },
 
     createResultActor: function(resultMeta, terms) {
