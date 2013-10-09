@@ -14,76 +14,38 @@
 **/
 
 const St = imports.gi.St;
+const Shell = imports.gi.Shell;
+const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
-const Search = imports.ui.search;
-const SearchDisplay = imports.ui.searchDisplay;
-const IconGrid = imports.ui.iconGrid;
 const Lang = imports.lang;
-
-const ICON_SIZE = 81;
-const MAX_SEARCH_RESULTS_ROWS = 1;
 
 let calcProvider = "";
 
-const CalcResult = new Lang.Class({
-    Name: 'CalcResult',
-
-    _init: function(resultMeta) {
-
-        this.actor = new St.Bin({style_class: 'contact',
-                                 reactive: true,
-                                 track_hover: true});
-
-        let content = new St.BoxLayout({style_class: 'contact-content',
-                                        vertical: false });
-        this.actor.set_child(content);
-
-        let icon = new St.Icon({icon_size: ICON_SIZE,
-                                icon_name: 'accessories-calculator',
-                                style_class: 'contact-icon'});
-
-        content.add(icon, {x_fill: true,
-                           y_fill: false,
-                           x_align: St.Align.START,
-                           y_align: St.Align.MIDDLE});
-
-        let result = new St.BoxLayout({style_class: 'contact-details',
-                                       vertical: true});
-
-        content.add(result, {x_fill: true, x_align: St.Align.START});
-
-        let exprLabel = new St.Label({text: resultMeta.expr,
-                                      style_class: 'result-expr'});
-        let resultLabel = new St.Label({text: resultMeta.result,
-                                        style_class: 'result-result'});
-
-        result.add(exprLabel, {x_fill: false, x_align: St.Align.START});
-        result.add(resultLabel, {x_fill: false, x_align: St.Align.START});
-        result.set_width(400);
-    }
-
-});
-
 const CalcProvider = new Lang.Class({
     Name: 'CalcProvider',
-    Extends: Search.SearchProvider,
 
-    _init: function(title) {
-        this.parent(title);
+    _init: function() {
+        this.id = "calculator";
+        this.app = Shell.AppSystem.get_default().lookup_app('gcalctool.desktop');
+        this.appInfo = this.app.get_app_info();
     },
 
-    getInitialResultSet: function(terms) { 
+    getInitialResultSet: function(terms) {
         let expr = terms.join('').replace(/,/g, '.');
         if (/^[0-9.+*/()-]+$/.test(expr)) {
             try {
-                this.searchSystem.pushResults(this, [{'expr': expr, 'result': eval(expr).toString()}]);
+                let result = eval(expr).toString();
+                this.searchSystem.setResults(this, [{'id': 0,
+                                                     'name': expr,
+                                                     'description': result,
+                                                     'createIcon': function() {return false;}}]);
             }
             catch(exp) {
-                this.searchSystem.pushResults(this, []);
+                this.searchSystem.setResults(this, []);
             }
         }
         else {
-            this.searchSystem.pushResults(this, []);
+            this.searchSystem.setResults(this, []);
         }
     },
 
@@ -91,37 +53,21 @@ const CalcProvider = new Lang.Class({
         return this.getInitialResultSet(terms);
     },
 
-    getResultMetas: function(ids, callback) {
-        let metas = [];
-        for (let i = 0; i < ids.length; i++) {
-            metas.push({'id': ids[i],
-                        'name': '',
-                        'createIcon': ''});
-        }
-        callback(metas);
-    },
-
-    createResultActor: function(resultMeta, terms) {
-        let result = new CalcResult(resultMeta.id);
-        return result.actor;
-    },
-
-    createResultContainerActor: function() {
-        let grid = new IconGrid.IconGrid({rowLimit: MAX_SEARCH_RESULTS_ROWS,
-                                          xAlign: St.Align.START });
-        grid.actor.style_class = 'contact-grid';
-
-        let actor = new SearchDisplay.GridSearchResults(this, grid);
-        return actor;
+    getResultMetas: function(result, callback) {
+        callback(result);
     },
 
     activateResult: function(resultId) {
-        return true;
+        this.app.open_new_window(-1);
+    },
+
+    launchSearch: function(terms) {
+        this.app.open_new_window(-1);
     }
 });
 
 function init() {
-    calcProvider = new CalcProvider('CALCULATOR');
+    calcProvider = new CalcProvider();
 }
 
 function enable() {
