@@ -57,6 +57,10 @@ const CalcProvider = new Lang.Class({
         callback(result);
     },
 
+    filterResults: function(results, max) {
+        return results;
+    },
+
     activateResult: function(resultId) {
         this.app.open_new_window(-1);
     },
