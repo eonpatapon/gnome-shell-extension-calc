@@ -27,7 +27,6 @@ const CalcProvider = new Lang.Class({
     _init: function() {
         this.id = "calculator";
         this.app = Shell.AppSystem.get_default().lookup_app('gcalctool.desktop');
-        this.appInfo = this.app.get_app_info();
     },
 
     getInitialResultSet: function(terms) {
@@ -36,9 +35,12 @@ const CalcProvider = new Lang.Class({
             try {
                 let result = eval(expr).toString();
                 this.searchSystem.setResults(this, [{'id': 0,
-                                                     'name': expr,
+                                                     'name': result,
                                                      'description': result,
-                                                     'createIcon': function() {return false;}}]);
+                                                     'createIcon': function(size) {
+                                                       return new St.Icon({icon_size: size,
+                                                                           icon_name: 'accessories-calculator'});
+                                                     }}]);
             }
             catch(exp) {
                 this.searchSystem.setResults(this, []);
@@ -62,12 +64,18 @@ const CalcProvider = new Lang.Class({
     },
 
     activateResult: function(resultId) {
-        this.app.open_new_window(-1);
+        if (this.app)
+          this.app.open_new_window(-1);
     },
 
     launchSearch: function(terms) {
-        this.app.open_new_window(-1);
-    }
+        if (this.app)
+          this.app.open_new_window(-1);
+    },
+
+    createResultObject: function(resultMeta, terms) {
+        return null;
+    },
 });
 
 function init() {
