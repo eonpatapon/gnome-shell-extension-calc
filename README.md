@@ -4,7 +4,7 @@ A screenshot is worth a thousand words
 
 ![Screenshot](https://github.com/eonpatapon/gnome-shell-extension-calc/raw/master/screenshot.png)
 
-The master branch supports gnome-shell 3.10
+The master branch supports gnome-shell 3.12
 
 ## Installation
 
