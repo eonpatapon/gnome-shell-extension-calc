@@ -1,5 +1,5 @@
 {
- "shell-version": ["3.10"],
+ "shell-version": ["3.12"],
  "uuid": "calc@patapon.info",
  "name": "Calculator",
  "description": "A simple calculator in the search overview",

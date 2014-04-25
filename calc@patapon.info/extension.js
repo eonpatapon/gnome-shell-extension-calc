@@ -26,37 +26,46 @@ const CalcProvider = new Lang.Class({
 
     _init: function() {
         this.id = "calculator";
-        this.app = Shell.AppSystem.get_default().lookup_app('gcalctool.desktop');
+        this.app = Shell.AppSystem.get_default().lookup_app('gnome-calculator.desktop');
     },
 
-    getInitialResultSet: function(terms) {
+    _do: function(callback, result) {
+        if (typeof callback === "function") {
+            callback(result);
+        }
+    },
+
+    _search: function(terms, callback) {
         let expr = terms.join('').replace(/,/g, '.');
+        let items = [];
         if (/^[0-9.+*/()-]+$/.test(expr)) {
             try {
                 let result = eval(expr).toString();
-                this.searchSystem.setResults(this, [{'id': 0,
-                                                     'name': result,
-                                                     'description': result,
-                                                     'createIcon': function(size) {
-                                                       return new St.Icon({icon_size: size,
-                                                                           icon_name: 'accessories-calculator'});
-                                                     }}]);
+                items = [result];
             }
-            catch(exp) {
-                this.searchSystem.setResults(this, []);
-            }
+            catch(exp) {}
         }
-        else {
-            this.searchSystem.setResults(this, []);
-        }
+        this._do(callback, items);
     },
 
-    getSubsearchResultSet: function(prevResults, terms) {
-        return this.getInitialResultSet(terms);
+    getInitialResultSet: function(terms, callback) {
+        this._search(terms, callback);
+    },
+
+    getSubsearchResultSet: function(prevResults, terms, callback) {
+        this._search(terms, callback);
     },
 
     getResultMetas: function(result, callback) {
-        callback(result);
+        callback([{
+                    'id': 0,
+                    'name': result[0],
+                    'description': result[0],
+                    'createIcon': function(size) {
+                        return new St.Icon({icon_size: size,
+                                          icon_name: 'accessories-calculator'});
+                    }
+                }]);
     },
 
     filterResults: function(results, max) {
@@ -83,9 +92,13 @@ function init() {
 }
 
 function enable() {
-    Main.overview.addSearchProvider(calcProvider);
+    if(typeof Main.overview.viewSelector === "object" &&
+       typeof Main.overview.viewSelector._searchResults === "object" &&
+       typeof Main.overview.viewSelector._searchResults._searchSystem === "object" &&
+       typeof Main.overview.viewSelector._searchResults._searchSystem.addProvider === "function") {
+        Main.overview.viewSelector._searchResults._searchSystem.addProvider(calcProvider);
+    }
 }
 
 function disable() {
-    Main.overview.removeSearchProvider(calcProvider);
 }
