@@ -6,6 +6,8 @@ A screenshot is worth a thousand words
 
 The master branch supports gnome-shell 3.12
 
+**This extension is now obsolete as the gnome calculator provides this functionality since g-s 3.14**
+
 ## Installation
 
 ### Via extensions.gnome.org
