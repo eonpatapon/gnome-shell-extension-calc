@@ -1,12 +1,8 @@
+**This extension is now obsolete as the gnome calculator provides this functionality since g-s 3.14**
+
 # gnome-shell-extension-calc
 
-A screenshot is worth a thousand words
-
-![Screenshot](https://github.com/eonpatapon/gnome-shell-extension-calc/raw/master/screenshot.png)
-
 The master branch supports gnome-shell 3.12
-
-**This extension is now obsolete as the gnome calculator provides this functionality since g-s 3.14**
 
 ## Installation
 
